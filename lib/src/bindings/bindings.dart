@@ -1,6 +1,6 @@
 import "dart:ffi";
 import "dart:io" show Platform;
-
+import 'package:ffi/ffi.dart';
 import "signatures.dart";
 
 // bundles all C functions to be exposed to Dart
@@ -9,27 +9,27 @@ class _ObjectBoxBindings {
 
     // common functions
     void Function(Pointer<Int32> major, Pointer<Int32> minor, Pointer<Int32> patch) obx_version;
-    Pointer<Uint8> Function() obx_version_string;
+    /*const*/ Pointer<Utf8> Function() obx_version_string;
     void Function(Pointer<Uint64> array) obx_bytes_array_free;
 
     // error info
     int Function() obx_last_error_code;
-    Pointer<Uint8> Function() obx_last_error_message;
+    /*const*/ Pointer<Utf8> Function() obx_last_error_message;
     int Function() obx_last_error_secondary;
     void Function() obx_last_error_clear;
 
     // schema model creation
     Pointer<Void> Function() obx_model;
     int Function(Pointer<Void> model) obx_model_free;
-    int Function(Pointer<Void> model, Pointer<Uint8> name, int entity_id, int entity_uid) obx_model_entity;
-    int Function(Pointer<Void> model, Pointer<Uint8> name, int type, int property_id, int property_uid) obx_model_property;
+    int Function(Pointer<Void> model, /*const*/ Pointer<Utf8> name, int entity_id, int entity_uid) obx_model_entity;
+    int Function(Pointer<Void> model, /*const*/ Pointer<Utf8> name, int type, int property_id, int property_uid) obx_model_property;
     int Function(Pointer<Void> model, int flags) obx_model_property_flags;
     int Function(Pointer<Void> model, int property_id, int property_uid) obx_model_entity_last_property_id;
     int Function(Pointer<Void> model, int entity_id, int entity_uid) obx_model_last_entity_id;
 
     // object store management
     Pointer<Void> Function() obx_opt;
-    int Function(Pointer<Void> opt, Pointer<Uint8> dir) obx_opt_directory;
+    int Function(Pointer<Void> opt, /*const*/ Pointer<Utf8> dir) obx_opt_directory;
     void Function(Pointer<Void> opt, int size_in_kb) obx_opt_max_db_size_in_kb;
     void Function(Pointer<Void> opt, int file_mode) obx_opt_file_mode;
     void Function(Pointer<Void> opt, int max_readers) obx_opt_max_readers;
@@ -65,7 +65,7 @@ class _ObjectBoxBindings {
         else if(Platform.isLinux || Platform.isAndroid) libName = "lib" + libName + ".so";
         else throw Exception("unsupported platform detected");
         objectbox = DynamicLibrary.open(libName);
-        
+
         // common functions
         obx_version = objectbox.lookup<NativeFunction<obx_version_native_t>>("obx_version").asFunction();
         obx_version_string = objectbox.lookup<NativeFunction<obx_version_string_native_t>>("obx_version_string").asFunction();

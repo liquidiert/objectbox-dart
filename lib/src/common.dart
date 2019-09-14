@@ -15,7 +15,7 @@ class Common {
     }
 
     static String versionString() {
-        return Utf8.fromUtf8(bindings.obx_version_string().cast<Utf8>());
+        return Utf8.fromUtf8(bindings.obx_version_string());
     }
 
     static String lastErrorString([err]) {
@@ -24,7 +24,7 @@ class Common {
 
         int last = bindings.obx_last_error_code();
         int last2 = bindings.obx_last_error_secondary();
-        String desc = Utf8.fromUtf8(bindings.obx_last_error_message().cast<Utf8>());
+        String desc = Utf8.fromUtf8(bindings.obx_last_error_message());
         return "code $last, $last2 ($desc)";
     }
 }

@@ -34,10 +34,7 @@ class Model {
                 // start entity
                 var entityUtf8 = Utf8.toUtf8(m["entity"]["name"]);
                 try {
-                    var entityNamePointer = entityUtf8.cast<Uint8>();
-                    checkObx(bindings.obx_model_entity(
-                        _objectboxModel, entityNamePointer, m["entity"]["id"],
-                        m["entity"]["uid"]));
+                    checkObx(bindings.obx_model_entity(_objectboxModel, entityUtf8, m["entity"]["id"], m["entity"]["uid"]));
                 }finally {
                     // same pointer
                     entityUtf8.free();

@@ -23,7 +23,7 @@ class Store {
         try {
             checkObx(bindings.obx_opt_model(opt, model.ptr));
             if (directory != null && directory.length != 0) {
-                var cStr = Utf8.toUtf8(directory).cast<Uint8>();
+                var cStr = Utf8.toUtf8(directory);
                 try {
                   checkObx(bindings.obx_opt_directory(opt, cStr));
                 }finally {
