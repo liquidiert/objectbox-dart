@@ -4,28 +4,30 @@ class CodeChunks {
   static String modelInfoLoader() => """
       Map<int, ModelEntity> _allOBXModelEntities = null;
 
-      void _loadOBXModelEntities() {
-      if (FileSystemEntity.typeSync("objectbox-model.json") == FileSystemEntityType.notFound)
-          throw Exception("objectbox-model.json not found");
+      Future<void> _loadOBXModelEntities() async {
+        // if (FileSystemEntity.typeSync("objectbox-model.json") == FileSystemEntityType.notFound)
+        //   throw Exception("objectbox-model.json not found");
+        // var modelJSON = new File("objectbox-model.json").readAsStringSync();
+        var modelJSON = await rootBundle.loadString("objectbox-model.json");
 
-      _allOBXModelEntities = {};
-      ModelInfo modelInfo = ModelInfo.fromMap(json.decode(new File("objectbox-model.json").readAsStringSync()));
-      modelInfo.entities.forEach((e) => _allOBXModelEntities[e.id.uid] = e);
+        _allOBXModelEntities = {};
+        ModelInfo modelInfo = ModelInfo.fromMap(json.decode(modelJSON));
+        modelInfo.entities.forEach((e) => _allOBXModelEntities[e.id.uid] = e);
       }
 
-      ModelEntity _getOBXModelEntity(int entityUid) {
-      if (_allOBXModelEntities == null) _loadOBXModelEntities();
-      if (!_allOBXModelEntities.containsKey(entityUid))
+      Future<ModelEntity> _getOBXModelEntity(int entityUid) async {
+        if (_allOBXModelEntities == null) await _loadOBXModelEntities();
+        if (!_allOBXModelEntities.containsKey(entityUid))
           throw Exception("entity uid missing in objectbox-model.json: \$entityUid");
-      return _allOBXModelEntities[entityUid];
+        return _allOBXModelEntities[entityUid];
       }
     """;
 
   static String instanceBuildersReaders(ModelEntity readEntity) {
     String name = readEntity.name;
     return """
-        ModelEntity _${name}_OBXModelGetter() {
-          return _getOBXModelEntity(${readEntity.id.uid});
+        Future<ModelEntity> _${name}_OBXModelGetter() async {
+          return await _getOBXModelEntity(${readEntity.id.uid});
         }
 
         $name _${name}_OBXBuilder(Map<String, dynamic> members) {
