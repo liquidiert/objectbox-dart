@@ -21,14 +21,15 @@ class Box<T> {
   ObjectReader<T> _entityReader;
   OBXFlatbuffersManager _fbManager;
 
-  Box(this._store) {
-    EntityDefinition<T> entityDefs = _store.entityDef(T);
-    _modelEntity = entityDefs.getModel();
-    _entityReader = entityDefs.reader;
-    _fbManager = new OBXFlatbuffersManager<T>(_modelEntity, entityDefs.writer);
-
+  Box._(this._store, this._modelEntity, this._entityReader, this._fbManager) {
     _cBox = bindings.obx_box(_store.ptr, _modelEntity.id.id);
     checkObxPtr(_cBox, "failed to create box");
+  }
+
+  static Future<Box> create<T>(Store store) async {
+    EntityDefinition<T> entityDefs = store.entityDef(T);
+    ModelEntity modelEntity = await entityDefs.getModel();
+    return Box<T>._(store, modelEntity, entityDefs.reader, OBXFlatbuffersManager<T>(modelEntity, entityDefs.writer));
   }
 
   _getOBXPutMode(_PutMode mode) {

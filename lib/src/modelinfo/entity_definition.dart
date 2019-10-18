@@ -5,7 +5,7 @@ typedef ObjectReader<T> = Map<String, dynamic> Function(T object);
 typedef ObjectWriter<T> = T Function(Map<String, dynamic> properties);
 
 class EntityDefinition<T> {
-  final ModelEntity Function() getModel;
+  final Future<ModelEntity> Function() getModel;
   final ObjectReader<T> reader;
   final ObjectWriter<T> writer;
 

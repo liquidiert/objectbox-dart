@@ -17,10 +17,7 @@ class Store {
   Pointer<Void> _cStore;
   Map<Type, EntityDefinition> _entityDefinitions = {};
 
-  Store(List<EntityDefinition> defs, {String directory, int maxDBSizeInKB, int fileMode, int maxReaders}) {
-    defs.forEach((d) => _entityDefinitions[d.type()] = d);
-    var model = Model(defs.map((d) => d.getModel()).toList());
-
+  Store._(this._entityDefinitions, Model model, {String directory, int maxDBSizeInKB, int fileMode, int maxReaders}) {
     var opt = bindings.obx_opt();
     checkObxPtr(opt, "failed to create store options");
 
@@ -43,6 +40,19 @@ class Store {
     }
     _cStore = bindings.obx_store_open(opt);
     checkObxPtr(_cStore, "failed to create store");
+  }
+
+  static Future<Store> create(List<EntityDefinition> defs,
+      {String directory, int maxDBSizeInKB, int fileMode, int maxReaders}) async {
+    Map<Type, EntityDefinition> entityDefinitions = {};
+    defs.forEach((d) => entityDefinitions[d.type()] = d);
+
+    List<ModelEntity> modelEntities = [];
+    for (EntityDefinition d in defs) modelEntities.add(await d.getModel());
+    var model = Model(modelEntities);
+
+    return Store._(entityDefinitions, model,
+        directory: directory, maxDBSizeInKB: maxDBSizeInKB, fileMode: fileMode, maxReaders: maxReaders);
   }
 
   close() {

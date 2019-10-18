@@ -55,8 +55,12 @@ class _OBDemoHomePageState extends State<OBDemoHomePage> {
 
   @override
   void initState() {
-    _store = Store([Note_OBXDefs]);
-    _box = Box<Note>(_store);
+    () async {
+      // TODO: don't show UI before _store and _box are loaded
+      _store = await Store.create([Note_OBXDefs]);
+      _box = await Box.create<Note>(_store);
+    }();
+
     super.initState();
   }
 
