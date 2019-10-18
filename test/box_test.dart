@@ -8,8 +8,8 @@ void main() {
   Box box;
 
   group("box", () {
-    setUp(() {
-      env = TestEnv("box");
+    setUp(() async {
+      env = await TestEnv.create("box");
       box = env.box;
     });
 
@@ -82,5 +82,7 @@ void main() {
     });
   });
 
-  tearDown(() {env.close();});
+  tearDown(() {
+    env.close();
+  });
 }

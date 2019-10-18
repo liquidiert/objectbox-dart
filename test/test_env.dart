@@ -6,13 +6,15 @@ class TestEnv {
   Store store;
   Box<TestEntity> box;
 
-  TestEnv(String name)
-    : dir = Directory("testdata-"+name) {
+  TestEnv._(this.dir, this.store, this.box) {}
 
+  static Future<TestEnv> create(String name) async {
+    var dir = Directory("testdata-" + name);
     if (dir.existsSync()) dir.deleteSync(recursive: true);
 
-    store = Store([TestEntity_OBXDefs], directory: dir.path);
-    box = Box<TestEntity>(store);
+    var store = await Store.create([TestEntity_OBXDefs], directory: dir.path);
+    var box = await Box.create<TestEntity>(store);
+    return TestEnv._(dir, store, box);
   }
 
   close() {
